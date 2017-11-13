@@ -14,7 +14,7 @@ offset = (poly, delta)->
     co = new ClipperLib.ClipperOffset()
     offseted = new ClipperLib.Paths()
     co.AddPaths(poly,  ClipperLib.JoinType.jtMiter, ClipperLib.EndType.etClosedPolygon);
-    co.MiterLimit = 2;
+    co.MiterLimit = 10;
     co.ArcTolerance = 0.25;
     co.Execute offseted, delta
     offseted
