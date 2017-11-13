@@ -20,7 +20,7 @@ offset = (poly, delta)->
     offseted
 
 clip = (subj, clip)->
-    subj = offset subj, -10
+    subj = offset subj, -1
     cpr = new ClipperLib.Clipper()
     cpr.AddPaths subj, ClipperLib.PolyType.ptSubject, true
     cpr.AddPaths clip, ClipperLib.PolyType.ptClip, true
@@ -30,7 +30,7 @@ clip = (subj, clip)->
         result, 
         ClipperLib.PolyFillType.pftNonZero, 
         ClipperLib.PolyFillType.pftNonZero)
-    result = offset result, 9
+    # result = offset result, 9
     result
 
 area = (poly)->
