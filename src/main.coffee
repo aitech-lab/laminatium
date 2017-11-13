@@ -17,7 +17,7 @@
 # Размеры канваса px
 W = 800
 H = 800
-wall_offset = -100
+wall_offset = -10
 
 $ = require "jquery"
 {rnd, poly2svg, path2svg, offset, clip, poly_bbox, point_inside, area} = require "./utils.coffee"
