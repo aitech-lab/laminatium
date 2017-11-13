@@ -20,7 +20,7 @@ H = 800
 wall_offset = -100
 
 $ = require "jquery"
-{rnd, poly2svg, path2svg, offset, clip, poly_bbox, point_inside} = require "./utils.coffee"
+{rnd, poly2svg, path2svg, offset, clip, poly_bbox, point_inside, area} = require "./utils.coffee"
 
 class Room
     constructor:(@svg)->
@@ -236,8 +236,11 @@ class Flooring
                     p.mouseout  @mouseout
                 setTimeout show, (i++)*50, p
                 @boards_layer.add p
-        
-        @boards_layer.add @svg.text 0, 0, "ко-во ламината: #{Math.ceil(@counter/8)} пачек (#{@counter}шт) "
+        @text.remove() if @text?
+        @text = @svg.text 20, 44, "площадь помещения: #{area(@room.glued_poly)/1e6}м², ко-во ламината: ~#{Math.ceil(@counter/8)} пачек (#{@counter}шт) "
+        @text.attr
+            fontSize: 16
+        # @boards_layer.add text 
 
     draw_boundings: =>
         rect = @svg.rect @bbox.l, @bbox.t, @bbox.w, @bbox.h

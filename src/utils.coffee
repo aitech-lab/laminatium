@@ -33,6 +33,9 @@ clip = (subj, clip)->
     result = offset result, 9
     result
 
+area = (poly)->
+    console.log poly
+    ClipperLib.JS.AreaOfPolygons poly
 
 path_bbox = (path)->
     min_x = min_y =  Infinity
@@ -91,6 +94,7 @@ module.exports =
     path2svg: path2svg
     poly_bbox: poly_bbox
     path_bbox: path_bbox
+    area: area
     point_inside: point_inside
     offset: offset
     clip: clip
