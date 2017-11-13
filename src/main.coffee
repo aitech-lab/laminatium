@@ -81,7 +81,7 @@ class Room
         
 class Flooring
 
-    constructor: (@svg, @room, @w=1380.0, @h=190.0, @dir=45, @shift=0.25)->
+    constructor: (@svg, @room, @w=1380.0, @h=190.0, @dir=45, @shift=0.33)->
         
         @debug = false
         @flooring = true
@@ -177,7 +177,9 @@ class Flooring
             undefined
         
         @boards = []
+        @counter = 0
         for l in [1...lines_cnt-1]
+            
             # высота хорды
             d = @R-@h*l
             # длинна хорды
@@ -187,24 +189,30 @@ class Flooring
             cy = sy+v_dy*l # +sn*h*0.5
 
             # сдвиг нечетного ряда
-            if l%2
-                cx-=h_dx*@shift
-                cy-=h_dy*@shift
-            else
-                cx+=h_dx*@shift
-                cy+=h_dy*@shift
-        
+            switch l%3
+                when 0
+                    cx-=h_dx*@shift
+                    cy-=h_dy*@shift
+                when 2
+                    cx+=h_dx*@shift
+                    cy+=h_dy*@shift
+            
             @debug_layer.add @svg.circle cx, cy, 40
             @debug_layer.add @svg.line cx-cs*h, cy+sn*h, cx+cs*h, cy-sn*h
             boards_cnt = h/@w|0
             line = []
             for r in [0..boards_cnt]
                 b = create_board cx+h_dx*r, cy+h_dy*r
-                line.push b if b
+                if b
+                    line.push b 
+                    @counter++
             for r in [-1..-boards_cnt]
                 b = create_board cx+h_dx*r, cy+h_dy*r
-                line.push b if b
+                if b
+                    line.push b
+                    @counter++ 
             @boards.push line
+
 
         i = 0
         for line in @boards
@@ -228,7 +236,7 @@ class Flooring
                     p.mouseout  @mouseout
                 setTimeout show, (i++)*50, p
                 @boards_layer.add p
-
+        @svg.text "ко-во ламината: #{Math.ceil(@counter/8)} пачек (#{@counter}шт) "
     draw_boundings: =>
         rect = @svg.rect @bbox.l, @bbox.t, @bbox.w, @bbox.h
         rect.attr
@@ -316,7 +324,7 @@ $ ->
     
     gui = new dat.GUI()
     gui.add(flooring, "dir"  ,    0,   360,   15).onFinishChange (v)->flooring.update()
-    gui.add(flooring, "shift", 0.05,  0.45, 0.05).onFinishChange (v)->flooring.update()
+    gui.add(flooring, "shift", 0.01,  0.5, 0.01).onFinishChange (v)->flooring.update()
     gui.add(flooring, "w"    ,  200,  2000,   10).onFinishChange (v)->flooring.update()
     gui.add(flooring, "h"    ,  200,  2000,   10).onFinishChange (v)->flooring.update()
     gui.add(flooring, "debug").onChange (v)->
