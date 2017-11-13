@@ -236,7 +236,9 @@ class Flooring
                     p.mouseout  @mouseout
                 setTimeout show, (i++)*50, p
                 @boards_layer.add p
-        @svg.text "ко-во ламината: #{Math.ceil(@counter/8)} пачек (#{@counter}шт) "
+        
+        @boards_layer.add @svg.text 0, 0, "ко-во ламината: #{Math.ceil(@counter/8)} пачек (#{@counter}шт) "
+
     draw_boundings: =>
         rect = @svg.rect @bbox.l, @bbox.t, @bbox.w, @bbox.h
         rect.attr
