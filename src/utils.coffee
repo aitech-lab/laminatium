@@ -20,7 +20,6 @@ offset = (poly, delta)->
     offseted
 
 clip = (subj, clip)->
-
     subj = offset subj, -10
     cpr = new ClipperLib.Clipper()
     cpr.AddPaths subj, ClipperLib.PolyType.ptSubject, true
@@ -34,9 +33,64 @@ clip = (subj, clip)->
     result = offset result, 9
     result
 
+
+path_bbox = (path)->
+    min_x = min_y =  Infinity
+    max_x = max_y = -Infinity
+    # ищем крайние точки
+    path.map (p)->
+        min_x = p.X if min_x > p.X
+        min_y = p.Y if min_y > p.Y
+        max_x = p.X if max_x < p.X
+        max_y = p.Y if max_y < p.Y
+
+    l: min_x # left
+    t: min_y # top 
+    r: max_x # right
+    b: max_y # bottom
+
+poly_bbox = (poly)->
+    bbox = l: Infinity, t: Infinity, r:-Infinity, b:-Infinity
+    # расширяем bbox полигона по включенным в него примитивам
+    poly.map (path)->
+        b = path_bbox path
+        bbox.l = b.l if bbox.l > b.l
+        bbox.t = b.t if bbox.t > b.t
+        bbox.r = b.r if bbox.r < b.r
+        bbox.b = b.b if bbox.b < b.b 
+    bbox.w = bbox.r-bbox.l # ширина
+    bbox.h = bbox.b-bbox.t # высотыа
+    return bbox 
+
+point_inside_path = (point, polygon) ->
+    x = point.X
+    y = point.Y
+    inside = false
+    i = 0
+    j = polygon.length - 1
+    while i < polygon.length
+        xi = polygon[i].X
+        yi = polygon[i].Y
+        xj = polygon[j].X
+        yj = polygon[j].Y
+        intersect =((yi > y) isnt (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)
+        if intersect
+            inside = !inside
+        j = i++
+    inside
+
+point_inside = (point, poly)->
+    for path in poly
+        if point_inside_path point, path
+            return true
+    false
+
 module.exports = 
     rnd: (r)-> Math.random()*r|0
     poly2svg: poly2svg
     path2svg: path2svg
+    poly_bbox: poly_bbox
+    path_bbox: path_bbox
+    point_inside: point_inside
     offset: offset
     clip: clip
