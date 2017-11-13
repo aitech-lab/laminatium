@@ -19,7 +19,16 @@ offset = (poly, delta)->
     co.Execute offseted, delta
     offseted
 
+scale_path = (path, scale)->
+    X: p.X*scale, Y: p.Y*scale for p in path
+scale_poly = (poly, scale)->
+    scale_path path, scale for path in poly
+
 clip = (subj, clip)->
+    
+    subj = scale_poly subj, 100
+    clip = scale_poly clip, 100
+
     subj = offset subj, -5
     cpr = new ClipperLib.Clipper()
     cpr.AddPaths subj, ClipperLib.PolyType.ptSubject, true
@@ -31,7 +40,8 @@ clip = (subj, clip)->
         ClipperLib.PolyFillType.pftNonZero, 
         ClipperLib.PolyFillType.pftNonZero)
     result = offset result, 4
-    result
+
+    result = scale_poly result, 0.01
 
 area = (poly)->
     ClipperLib.JS.AreaOfPolygons poly

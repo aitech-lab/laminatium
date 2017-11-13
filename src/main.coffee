@@ -231,14 +231,14 @@ class Flooring
                         strokeOpacity: "1.0"
                     p.mouseover @mouseover
                     p.mouseout  @mouseout
-                setTimeout show, (i++)*50, p
+                setTimeout show, (i++)*25, p
                 @boards_layer.add p
         
         # статистика
         @text.remove() if @text?
-        @text = @svg.text 20, 44, "площадь помещения: #{area(@room.glued_poly)/1e6}м², ко-во ламината: ~#{Math.ceil(@counter/8)} пачек (#{@counter}шт) "
+        @text = @svg.text 20, 44, "S: #{area(@room.glued_poly)/1e6}м², ~#{Math.ceil(@counter/8)} пачек (#{@counter}шт) "
         @text.attr
-            fontSize: 16
+            fontSize: 28
         # @boards_layer.add text 
    
     # Визуализация описанной окружности и bbox
@@ -289,6 +289,7 @@ class Flooring
         @details_layer.clear()
         @details_layer.add p
         
+        # В середине каждого ребра выводим размер
         for i in [0...path.length]
             j = i+1
             j%= path.length
@@ -298,17 +299,12 @@ class Flooring
             cx = (path[i].X+path[j].X)*0.5
             cy = (path[i].Y+path[j].Y)*0.5
             angle = Math.atan2(dx,dy)*180.0/Math.PI
-            # c = @svg.circle(cx,cy,20)
-            # c.attr
-            #     transform: "translate(#{-bbox.x} #{-bbox.y}) rotate(#{@dir+90})"
-            # @details_layer.add c
 
-            t = @svg.text(cx, cy-10, "#{(ln+2)|0} мм")
+            t = @svg.text(cx, cy-10, "#{(ln+1)|0} мм")
             t.attr
                transform: "translate(#{-bbox.x} #{-bbox.y}) rotate(#{@dir+90}) rotate(#{-90-angle} #{cx} #{cy})"
                textAnchor: "middle"
-               fontSize: 28
-               textColor: "gray"
+               fontSize: 24
             @details_layer.add t
 
         @details_layer.attr
