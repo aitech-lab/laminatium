@@ -34,7 +34,6 @@ clip = (subj, clip)->
     result
 
 area = (poly)->
-    console.log poly
     ClipperLib.JS.AreaOfPolygons poly
 
 path_bbox = (path)->

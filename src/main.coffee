@@ -51,7 +51,6 @@ class Room
         @cy = @bbox.t+@bbox.h*0.5
         # радиус описаной окружности
         @R = Math.sqrt(@bbox.w*@bbox.w + @bbox.h*@bbox.h)*0.5
-        console.log @R
 
         glued_path = @svg.path poly2svg @glued_poly
         glued_path.attr
@@ -68,14 +67,6 @@ class Room
             fill: "none"
             stroke: "red"
             strokeWidth: 1
-
-        # blocks = @svg.path poly2svg @poly
-        # blocks.attr
-        #     "vector-effect":"non-scaling-stroke"
-        #     "stroke-dasharray": "2, 5" 
-        #     fill: "none"
-        #     stroke: "gray"
-        #     strokeWidth: 0.5
 
         @group.add @offseted_path
         
@@ -176,6 +167,9 @@ class Flooring
                     return board
             undefined
         
+        # заполяем помещение досками
+        # 1) проходим по диаметру описаной окружности
+        # 2) строим ряды влево и вправо от центра
         @boards = []
         @counter = 0
         for l in [1...lines_cnt-1]
@@ -188,7 +182,7 @@ class Flooring
             cx = sx+v_dx*l # -cs*h*0.5
             cy = sy+v_dy*l # +sn*h*0.5
 
-            # сдвиг нечетного ряда
+            # сдвиг рядов отностиельно друг-друга
             switch l%3
                 when 0
                     cx-=h_dx*@shift
@@ -197,9 +191,12 @@ class Flooring
                     cx+=h_dx*@shift
                     cy+=h_dy*@shift
             
+            # отладочная визуализация
             @debug_layer.add @svg.circle cx, cy, 40
             @debug_layer.add @svg.line cx-cs*h, cy+sn*h, cx+cs*h, cy-sn*h
             boards_cnt = h/@w|0
+            
+            # добавляем все доски пересекающие полигон помещения
             line = []
             for r in [0..boards_cnt]
                 b = create_board cx+h_dx*r, cy+h_dy*r
@@ -213,7 +210,7 @@ class Flooring
                     @counter++ 
             @boards.push line
 
-
+        # Пробегаемся по рядам и обрезаем доски
         i = 0
         for line in @boards
             clipped_line = clip line, @room.offseted_poly
@@ -236,12 +233,15 @@ class Flooring
                     p.mouseout  @mouseout
                 setTimeout show, (i++)*50, p
                 @boards_layer.add p
+        
+        # статистика
         @text.remove() if @text?
         @text = @svg.text 20, 44, "площадь помещения: #{area(@room.glued_poly)/1e6}м², ко-во ламината: ~#{Math.ceil(@counter/8)} пачек (#{@counter}шт) "
         @text.attr
             fontSize: 16
         # @boards_layer.add text 
-
+   
+    # Визуализация описанной окружности и bbox
     draw_boundings: =>
         rect = @svg.rect @bbox.l, @bbox.t, @bbox.w, @bbox.h
         rect.attr
@@ -258,6 +258,7 @@ class Flooring
             strokeWidth: "1"
         @debug_layer.add circle
 
+    # информация по вышанной доске
     details: (path)=>
         d = path.attr "d"
         points = d.replace(/[^,.0-9]/g, '').split(',').map (n)->parseFloat n
@@ -296,16 +297,19 @@ class Flooring
             ln = Math.sqrt(dx*dx+dy*dy)
             cx = (path[i].X+path[j].X)*0.5
             cy = (path[i].Y+path[j].Y)*0.5
-            
-            # c = @svg.circle(0,0,5)
+            angle = Math.atan2(dx,dy)*180.0/Math.PI
+            # c = @svg.circle(cx,cy,20)
             # c.attr
-            #     transform: "translate(#{cx} #{cy}) rotate(#{@dir+90})"
+            #     transform: "translate(#{-bbox.x} #{-bbox.y}) rotate(#{@dir+90})"
             # @details_layer.add c
 
-            #t = @svg.text(0, 0, "#{ln|0}mm")
-            #t.attr
-            #    transform: "translate(#{cx-bbox.x} #{cy-bbox.y})"
-            #@details_layer.add t
+            t = @svg.text(cx, cy-10, "#{(ln+2)|0} мм")
+            t.attr
+               transform: "translate(#{-bbox.x} #{-bbox.y}) rotate(#{@dir+90}) rotate(#{-90-angle} #{cx} #{cy})"
+               textAnchor: "middle"
+               fontSize: 28
+               textColor: "gray"
+            @details_layer.add t
 
         @details_layer.attr
             transform: "translate(#{@bbox.r*0.1}, #{@bbox.t*0.1}) scale(0.5) "
@@ -321,7 +325,7 @@ class Flooring
         @details_layer.clear()
 
     mousedown: ->
-        console.log @
+
 $ ->
     svg = Snap "100%", "100%"
     room = new Room svg
