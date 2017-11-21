@@ -72,7 +72,7 @@ class Room
         
 class Flooring
 
-    constructor: (@svg, @room, @w=1380.0, @h=190.0, @dir=45, @shift=0.33)->
+    constructor: (@svg, @room, @w=1380.0, @h=190.0, @dir=45, @shift=0.2)->
         
         @debug = false
         @flooring = true
@@ -183,13 +183,20 @@ class Flooring
             cy = sy+v_dy*l # +sn*h*0.5
 
             # сдвиг рядов отностиельно друг-друга
-            switch l%3
+            switch l%5
                 when 0
+                    cx-=h_dx*@shift*2.0
+                    cy-=h_dy*@shift*2.0
+                when 1
                     cx-=h_dx*@shift
                     cy-=h_dy*@shift
-                when 2
+                when 3
                     cx+=h_dx*@shift
                     cy+=h_dy*@shift
+                when 4
+                    cx+=h_dx*@shift*2.0
+                    cy+=h_dy*@shift*2.0
+
             
             # отладочная визуализация
             @debug_layer.add @svg.circle cx, cy, 40
