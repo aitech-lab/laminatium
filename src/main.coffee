@@ -184,18 +184,18 @@ class Flooring
 
             # сдвиг рядов отностиельно друг-друга
             switch l%5
-                when 0
-                    cx-=h_dx*@shift*2.0
-                    cy-=h_dy*@shift*2.0
                 when 1
-                    cx-=h_dx*@shift
-                    cy-=h_dy*@shift
+                    cx+=h_dx*2.0/3.0
+                    cy+=h_dy*2.0/3.0
+                when 2
+                    cx+=h_dx/4.0
+                    cy+=h_dy/4.0
                 when 3
-                    cx+=h_dx*@shift
-                    cy+=h_dy*@shift
+                    cx+=h_dx*3.0/4.0
+                    cy+=h_dy*3.0/4.0
                 when 4
-                    cx+=h_dx*@shift*2.0
-                    cy+=h_dy*@shift*2.0
+                    cx+=h_dx/2.0
+                    cy+=h_dy/2.0
 
             
             # отладочная визуализация
