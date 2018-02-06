@@ -6,7 +6,7 @@ module.exports = {
     },
     module: {
         loaders: [
-            { test: /\.coffee$/, use: ["coffee-loader"] }
+            { test: /\.coffee$/, use: ["iced-coffee-loader"] }
         ]
     }
 };
